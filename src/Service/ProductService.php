@@ -21,7 +21,7 @@ class ProductService
         $result = [];
 
         foreach ($products as $product) {
-            if ($category && strcasecmp(trim($product['categoryName']), trim($category)) !== 0) {
+            if ($category && (!isset($product['categoryName']) || strcasecmp(trim($product['categoryName']), trim($category)) !== 0)) {
                 continue;
             }
 
@@ -45,16 +45,15 @@ class ProductService
         ];
     }
 
-
-
     public function getById($token, $id)
     {
         $products = $this->externalApi->getProductsWithToken($token);
         if (!$products) {
             return null;
         }
+
         foreach ($products as $product) {
-            if ($product['sku'] == $id) {
+            if (isset($product['sku']) && $product['sku'] == $id) {
                 return $this->processProduct($product);
             }
         }
@@ -64,11 +63,14 @@ class ProductService
 
     private function processProduct($product)
     {
-        if (strcasecmp($product['category'], 'Monitori') === 0) {
+        if (isset($product['category']) && strcasecmp($product['category'], 'Monitori') === 0) {
             $product['price'] *= 1.1;
         }
 
-        $product['description'] = preg_replace('/brzina/i', 'performanse', $product['description']);
+        if (isset($product['description'])) {
+            $product['description'] = preg_replace('/brzina/i', 'performanse', $product['description']);
+        }
+
         return $product;
     }
 }
