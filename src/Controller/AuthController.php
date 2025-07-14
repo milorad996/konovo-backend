@@ -19,7 +19,7 @@ class AuthController
         if ($token) {
             Response::json(['token' => $token]);
         } else {
-            Response::json(['error' => 'Invalid login'], 401);
+            Response::json(['error' => 'Pogrešno korisničko ime ili lozinka. Pokušajte ponovo.'], 401);
         }
     }
 }
